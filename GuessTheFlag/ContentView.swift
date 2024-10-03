@@ -5,17 +5,14 @@
 //  Created by Chaher Machhour on 02/10/2024.
 //
 
-// Reste un petit bug à gérer
-
 import SwiftUI
 
 struct ContentView: View {
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Spain", "UK", "Ukraine", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
-    
     @State private var showingScore = false
     @State private var scoreTitle = ""
-    @State private var userScore: Int = 0
+    @State private var userScore = 0
     @State private var showingFinalScoreAndRestart = false
     @State private var flagTappedTappedNumber = 0
     
@@ -69,33 +66,20 @@ struct ContentView: View {
             }
             .padding()
         }
-        
-        .alert(scoreTitle, isPresented: $showingFinalScoreAndRestart) {
-            Button("Restart", action: restartTheGame)
-        } message: {
-            Text("Your final score is \(userScore), you can restart")
-        }
-        
         .alert(scoreTitle, isPresented: $showingScore) {
             Button {
-                askQuestion()
-                if flagTappedTappedNumber == 8 {
-                    showFinalScore()
-                    restartTheGame()
-                } else {
-                    flagTappedTappedNumber += 1
-                }
+                flagTappedTappedNumber == 8 ? restartTheGame() : askQuestion()
             } label: {
-                Text("Continue")
+                flagTappedTappedNumber == 8 ? Text("Restart") : Text("Continue")
             }
         } message: {
-            Text("Your score is \(userScore)")
+            flagTappedTappedNumber == 8 ? Text("Your final score is \(userScore), you can restart") : Text("Your score is \(userScore)")
         }
-        
-        
     }
     
     func flagTapped(_ number: Int) {
+        flagTappedTappedNumber += 1
+        
         if number == correctAnswer {
             scoreTitle = "Correct"
             userScore += 1
@@ -111,12 +95,10 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
     }
     
-    func showFinalScore() {
-        showingFinalScoreAndRestart = true
-    }
-    
     func restartTheGame() {
+        showingFinalScoreAndRestart = true
         userScore = 0
+        flagTappedTappedNumber = 0
     }
 }
 
