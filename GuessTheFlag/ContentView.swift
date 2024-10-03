@@ -5,7 +5,7 @@
 //  Created by Chaher Machhour on 02/10/2024.
 //
 
-// J'ai fait fausse route, je devais redémarrer après 8 questions et pas 8 bonnes réponses
+// Reste un petit bug à gérer
 
 import SwiftUI
 
@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var scoreTitle = ""
     @State private var userScore: Int = 0
     @State private var showingFinalScoreAndRestart = false
+    @State private var flagTappedTappedNumber = 0
     
     var body: some View {
         ZStack {
@@ -76,7 +77,17 @@ struct ContentView: View {
         }
         
         .alert(scoreTitle, isPresented: $showingScore) {
-            Button("Continue", action: askQuestion)
+            Button {
+                askQuestion()
+                if flagTappedTappedNumber == 8 {
+                    showFinalScore()
+                    restartTheGame()
+                } else {
+                    flagTappedTappedNumber += 1
+                }
+            } label: {
+                Text("Continue")
+            }
         } message: {
             Text("Your score is \(userScore)")
         }
@@ -85,10 +96,7 @@ struct ContentView: View {
     }
     
     func flagTapped(_ number: Int) {
-        if userScore == 8 {
-            showFinalScore()
-            return
-        } else if number == correctAnswer {
+        if number == correctAnswer {
             scoreTitle = "Correct"
             userScore += 1
         } else {
