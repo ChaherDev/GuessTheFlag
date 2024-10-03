@@ -5,6 +5,8 @@
 //  Created by Chaher Machhour on 02/10/2024.
 //
 
+// J'ai fait fausse route, je devais redémarrer après 8 questions et pas 8 bonnes réponses
+
 import SwiftUI
 
 struct ContentView: View {
@@ -13,6 +15,8 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var userScore: Int = 0
+    @State private var showingFinalScoreAndRestart = false
     
     var body: some View {
         ZStack {
@@ -58,24 +62,37 @@ struct ContentView: View {
                 Spacer()
                 Spacer()
                 
-                Text("Score: ???")
+                Text("Score: \(userScore)")
                     .foregroundStyle(.white)
                     .font(.title.bold())
             }
             .padding()
         }
+        
+        .alert(scoreTitle, isPresented: $showingFinalScoreAndRestart) {
+            Button("Restart", action: restartTheGame)
+        } message: {
+            Text("Your final score is \(userScore), you can restart")
+        }
+        
         .alert(scoreTitle, isPresented: $showingScore) {
             Button("Continue", action: askQuestion)
         } message: {
-            Text("Your score is ??")
+            Text("Your score is \(userScore)")
         }
+        
+        
     }
     
     func flagTapped(_ number: Int) {
-        if number == correctAnswer {
+        if userScore == 8 {
+            showFinalScore()
+            return
+        } else if number == correctAnswer {
             scoreTitle = "Correct"
+            userScore += 1
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Wrong! That's the flag of \(countries[number])"
         }
         
         showingScore = true
@@ -84,6 +101,14 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func showFinalScore() {
+        showingFinalScoreAndRestart = true
+    }
+    
+    func restartTheGame() {
+        userScore = 0
     }
 }
 
